@@ -3,6 +3,8 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UsersProfileApp.Android", "UsersProfileApp.Android\UsersProfileApp.Android.csproj", "{A6D2BEBE-0959-4064-83B8-6E712A18E37E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UsersProfileApp.Core", "UsersProfileApp.Core\UsersProfileApp.Core.csproj", "{689A4E42-65AB-4F56-B892-34B0CBB32814}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -13,5 +15,9 @@ Global
 		{A6D2BEBE-0959-4064-83B8-6E712A18E37E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A6D2BEBE-0959-4064-83B8-6E712A18E37E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A6D2BEBE-0959-4064-83B8-6E712A18E37E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{689A4E42-65AB-4F56-B892-34B0CBB32814}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{689A4E42-65AB-4F56-B892-34B0CBB32814}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{689A4E42-65AB-4F56-B892-34B0CBB32814}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{689A4E42-65AB-4F56-B892-34B0CBB32814}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

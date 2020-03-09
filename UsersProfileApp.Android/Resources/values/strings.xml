@@ -1,5 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <resources>
-    <string name="app_name">UsersProfileApp.Android</string>
+    <string name="app_name">User Profile</string>
     <string name="action_settings">Settings</string>
+    <string name="username">Email Address</string>
+    <string name="password">Password</string>
+    <string name="loginUsernameHint">Enter your email address</string>
+    <string name="loginPasswordHint">Enter your password</string>
+    <string name="signInButtonText">Sign In</string>
+    <string name="loginRegisterText">Don\'t have an account? Register Now!</string>
+    <string name="registerAccount">Register Your Account</string>
+    <string name="registerButton">Register</string>
+    <string name="registerUser">Enter desired email address</string>
+    <string name="registerPassword">Enter desired password</string>
+    <string name="regRequirement">Password must be 7 to 16 characters long. \nPassword must contain atleast one uppercase, lowercase letter and a digit. \nPassword cannot be password, default or same as username.</string>
 </resources>

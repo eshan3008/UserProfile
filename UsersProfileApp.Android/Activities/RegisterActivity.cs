@@ -1,8 +1,21 @@
 ﻿using System;
-namespace UsersProfileApp.Android.Activity
+using Android.App;
+using Android.Content;
+using Android.Content.PM;
+using Android.Gms.Tasks;
+using Android.OS;
+using Android.Support.Design.Widget;
+using Android.Views;
+using Android.Views.InputMethods;
+using Android.Widget;
+using Firebase;
+using Firebase.Auth;
+using UsersProfileApp.Android.Helper;
+
+namespace UsersProfileApp.Android.Activities
 {
-    [Activity(Label = "RegisterActivity")]
-    public class RegisterActivity : Activity, IOnClickListener
+    [Activity(Label = "RegisterActivity", LaunchMode = LaunchMode.SingleInstance)]
+    public class RegisterActivity : Activity, IOnCompleteListener
     {
         EditText usernameTextBox, passwordTextBox;
         Button registerButton;
@@ -10,10 +23,6 @@ namespace UsersProfileApp.Android.Activity
         View view;
         public static FirebaseApp app;
         FirebaseAuth firebaseAuth;
-        FirebaseDatabase database;
-        TaskCompleteListener taskCompleteListener = new TaskCompleteListener();
-        ISharedPreferences preferences = Application.Context.GetSharedPreferences("userinfo", FileCreationMode.Private);
-        ISharedPreferencesEditor editor;
 
         protected override void OnCreate(Bundle savedInstanceState)
         {
@@ -28,9 +37,7 @@ namespace UsersProfileApp.Android.Activity
             registerButton.Click -= OnRegisterClick;
             registerButton.Click += OnRegisterClick;
 
-            //firebaseAuth = FirebaseAuth.GetInstance(firebaseAuth.App);
             InitializeFirebase();
-            firebaseAuth = FirebaseAuth.Instance;
 
             passwordWrapper.HintEnabled = false;
             usernameWrapper.HintEnabled = false;
@@ -43,18 +50,15 @@ namespace UsersProfileApp.Android.Activity
             if (app == null)
             {
                 var options = new FirebaseOptions.Builder()
-                                .SetApplicationId("1:470655144273:android:7ac3b51a4bf8a7c3d38370 ")
-                                .SetApiKey("AIzaSyAi5ihveO6Eh-NbLo7f_IvJNEqFbmvkR0g ")
+                                .SetApplicationId("1:470655144273:android:7ac3b51a4bf8a7c3d38370")
+                                .SetApiKey("AIzaSyAi5ihveO6Eh-NbLo7f_IvJNEqFbmvkR0g")
                                 .SetDatabaseUrl("https://loginapp-4e7ca.firebaseio.com")
                                 .SetStorageBucket("loginapp-4e7ca.appspot.com")
                                 .Build();
                 app = FirebaseApp.InitializeApp(this, options);
-                database = FirebaseDatabase.GetInstance(app);
             }
-            else
-            {
-                database = FirebaseDatabase.GetInstance(app);
-            }
+
+            firebaseAuth = new FirebaseAuth(app);
         }
 
         public static void hideKeyboard(object textbox)
@@ -74,9 +78,9 @@ namespace UsersProfileApp.Android.Activity
         {
             hideKeyboard(sender);
 
-            if (string.IsNullOrEmpty(usernameTextBox.Text))
+            if (!EmailValidator.IsValidEmail(usernameTextBox.Text))
             {
-                usernameWrapper.Error = "Username cannot be empty";
+                usernameWrapper.Error = "Please enter a valid email address";
                 usernameWrapper.ErrorEnabled = true;
             }
             else
@@ -85,9 +89,9 @@ namespace UsersProfileApp.Android.Activity
 
             }
 
-            if (PasswordValidator.validate(passwordTextBox.Text) != null)
+            if (PasswordValidator.validate(passwordTextBox.Text, usernameTextBox.Text) != null)
             {
-                passwordWrapper.Error = PasswordValidator.validate(passwordTextBox.Text);
+                passwordWrapper.Error = PasswordValidator.validate(passwordTextBox.Text, usernameTextBox.Text);
                 passwordWrapper.ErrorEnabled = true;
             }
             else
@@ -95,7 +99,7 @@ namespace UsersProfileApp.Android.Activity
                 CorrectPassword();
             }
 
-            if (!string.IsNullOrEmpty(usernameTextBox.Text) && PasswordValidator.validate(passwordTextBox.Text) == null)
+            if (usernameWrapper.ErrorEnabled == false && passwordWrapper.ErrorEnabled == false)
             {
                 CorrectInputs();
             }
@@ -145,55 +149,23 @@ namespace UsersProfileApp.Android.Activity
                 Toast.MakeText(this, "Already logged in User", ToastLength.Short).Show();
             }
         }
+
         // Username is the email address provided
         void RegisterUser(string username, string password)
         {
-            taskCompleteListener.Success += taskCompleteListener_Success;
-            taskCompleteListener.Failure += taskCompleteListener_Failure;
-            firebaseAuth.CreateUserWithEmailAndPassword(username, password)
-                .AddOnSuccessListener(this, taskCompleteListener)
-                .AddOnFailureListener(this, taskCompleteListener);
+            firebaseAuth.CreateUserWithEmailAndPassword(username, password).AddOnCompleteListener(this);
         }
 
-        //public void OnComplete(Task task)
-        //{
-        //    if (task.IsSuccessful == true)
-        //    {
-        //        Toast.MakeText(this, "Registration Success ", ToastLength.Short).Show();
-        //    }
-        //    else
-        //    {
-        //        Toast.MakeText(this, "Registration Failed ", ToastLength.Short).Show();
-        //    }
-        //}
-
-        private void taskCompleteListener_Failure(object sender, EventArgs e)
+        public void OnComplete(Task task)
         {
-            Toast.MakeText(this, "Unsuccessful registration. Please try again ", ToastLength.Short).Show();
-        }
-
-        private void taskCompleteListener_Success(object sender, EventArgs e)
-        {
-            Toast.MakeText(this, "User registration successfull", ToastLength.Short).Show();
-            HashMap usermap = new HashMap();
-            usermap.Put("username", usernameTextBox.Text);
-            usermap.Put("password", passwordTextBox.Text);
-
-            DatabaseReference userReference = database.GetReference("users/" + firebaseAuth.CurrentUser.Uid);
-            userReference.SetValue(usermap);
-
-        }
-
-        void SaveToSharedPreferences()
-        {
-            editor = preferences.Edit();
-
-            editor.PutString("username", usernameTextBox.Text);
-            editor.Apply();
-        }
-
-        void RetrieveData()
-        {
-            string username = preferences.GetString("username", "");
+            if (task.IsSuccessful == true)
+            {
+                Toast.MakeText(this, "Registration Success ", ToastLength.Short).Show();
+            }
+            else
+            {
+                Toast.MakeText(this, "Registration Failed ", ToastLength.Short).Show();
+            }
         }
     }
+}
