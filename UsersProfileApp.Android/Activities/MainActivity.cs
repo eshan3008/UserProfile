@@ -16,7 +16,6 @@ namespace UsersProfileApp.Android.Activities
         Button signInButton, newUserButton;
         TextInputLayout loginUsername, loginPassword;
         ImageView appImage;
-        FirebaseAuth firebaseauth;
 
         protected override void OnCreate(Bundle savedInstanceState)
         {
@@ -34,6 +33,7 @@ namespace UsersProfileApp.Android.Activities
             appImage.LayoutParameters.Width = 300;
             appImage.SetScaleType(ImageView.ScaleType.FitXy);
 
+            var app = FirebaseApp.InitializeApp(this);
             InitializeFirebase();
 
             newUserButton.Click += delegate
@@ -51,26 +51,23 @@ namespace UsersProfileApp.Android.Activities
 
         private async void LoginButton_Click(object sender, EventArgs e)
         {
-            bool _isValidLogin = false;
-
             string username = loginUsername.EditText.Text.ToString();
             string password = loginPassword.EditText.Text.ToString();
 
             if (!EmailValidator.IsValidEmail(username))
             {
+                // Display message if invalid username
                 Toast.MakeText(this, "Please provide a valid email address", ToastLength.Short).Show();
-                _isValidLogin = false;
             }
             else if (PasswordValidator.validate(password, username) != null)
             {
+                // Display message if invalid password
                 Toast.MakeText(this, "Password doesnot meet the requirements", ToastLength.Short).Show();
-                _isValidLogin = false;
             }
             else
             {
-                _isValidLogin = true;
-
-                firebaseauth.SignInWithEmailAndPassword(username, password).AddOnCompleteListener(this);
+                // Both username and Password are valid
+                FirebaseHelper.FirebaseAuthentication.SignInWithEmailAndPassword(username, password).AddOnCompleteListener(this);
             }
         }
 
@@ -88,18 +85,27 @@ namespace UsersProfileApp.Android.Activities
                 app = FirebaseApp.InitializeApp(this, options);
             }
 
-            firebaseauth = new FirebaseAuth(app);
+            FirebaseHelper.FirebaseAuthentication = new FirebaseAuth(app);
+
+            // Check if the user is already logged in
+            if (FirebaseHelper.FirebaseAuthentication.CurrentUser != null)
+            {
+                StartActivity(typeof(HomeActivity));
+                Finish();
+            }
         }
 
         public void OnComplete(Task task)
         {
             if (task.IsSuccessful == true)
             {
+                // if user has right credential and is a valid user
                 StartActivity(typeof(HomeActivity));
                 Finish();
             }
             else
             {
+                // User doesnot exist  or username / password is not matching
                 Toast.MakeText(this, "Username and Password doesnot match", ToastLength.Short).Show();
             }
         }

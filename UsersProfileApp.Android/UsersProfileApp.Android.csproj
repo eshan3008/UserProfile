@@ -69,6 +69,7 @@
     <Compile Include="Helper\ImageHelper.cs" />
     <Compile Include="Activities\UserProfileActivity.cs" />
     <Compile Include="Helper\EmailValidator.cs" />
+    <Compile Include="Helper\FirebaseHelper.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\AboutResources.txt" />
@@ -120,6 +121,10 @@
       <Generator></Generator>
     </AndroidResource>
     <AndroidResource Include="Resources\drawable\app_launcher.png">
+      <SubType></SubType>
+      <Generator></Generator>
+    </AndroidResource>
+    <AndroidResource Include="Resources\layout\Progress.xml">
       <SubType></SubType>
       <Generator></Generator>
     </AndroidResource>

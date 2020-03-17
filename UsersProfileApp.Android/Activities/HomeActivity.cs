@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using Android.App;
 using Android.OS;
-using Firebase.Auth;
 using Android.Support.V7.App;
 using Android.Support.V7.Widget;
 using UsersProfileApp.Android.Adapter;
@@ -10,6 +9,9 @@ using UsersProfileApp.Core.DataStorage;
 using UsersProfileApp.Core.Model;
 using UsersProfileApp.Core.Service;
 using Android.Content.PM;
+using AndroidSupport = Android.Support;
+using Android.Views;
+using UsersProfileApp.Android.Helper;
 
 namespace UsersProfileApp.Android.Activities
 {
@@ -19,8 +21,8 @@ namespace UsersProfileApp.Android.Activities
         RecyclerView _recyclerView;
         UserAdapter _adapter;
         Toolbar toolbar;
-        FirebaseAuth FirebaseAuth;
         List<PhotoModel> users;
+        Dialog dialog;
 
         protected async override void OnCreate(Bundle savedInstanceState)
         {
@@ -32,6 +34,7 @@ namespace UsersProfileApp.Android.Activities
             SetSupportActionBar(toolbar);
             SupportActionBar.Title = "User List";
 
+            setDialog();
             _recyclerView = FindViewById<RecyclerView>(Resource.Id.usersProfileRecyclerView);
             users = await UserProfileService.GetUsersProfile();
 
@@ -40,6 +43,8 @@ namespace UsersProfileApp.Android.Activities
 
             _recyclerView.SetLayoutManager(new LinearLayoutManager(Application.Context));
             _recyclerView.SetAdapter(_adapter);
+
+            if (users != null) dialog.Dismiss();
         }
 
         public void OnItemClick(int position)
@@ -51,27 +56,33 @@ namespace UsersProfileApp.Android.Activities
             }
         }
 
-        //public bool onCreateOptionsMenu(IMenu menu)
-        //{
-        //    MenuInflater.Inflate(Resource.Menu.menu_main, menu);
-        //    return base.OnCreateOptionsMenu(menu);
-        //}
+        private void setDialog()
+        {
+            AndroidSupport.V7.App.AlertDialog.Builder builder = new AndroidSupport.V7.App.AlertDialog.Builder(this);
+            builder.SetView(Resource.Layout.Progress);
+            dialog = builder.Create();
+            dialog.SetCancelable(false);
+            dialog.Show();
+        }
 
-        // Logout functionality from action menu
-        //public override bool OnOptionsItemSelected(IMenuItem item)
-        //{
-        //    switch (item.ItemId)
-        //    {
-        //        case Resource.Id.menuLogout:
-        //            FirebaseAuth.SignOut();
-        //            StartActivity(typeof(MainActivity));
-        //            Finish();
-        //            return true;
+        public override bool OnCreateOptionsMenu(IMenu menu)
+        {
+            MenuInflater.Inflate(Resource.Menu.menu_main, menu);
 
-        //        default:
-        //            return base.OnOptionsItemSelected(item);
-        //    }
-        //}
+            return base.OnCreateOptionsMenu(menu);
+        }
+
+        public override bool OnOptionsItemSelected(IMenuItem item)
+        {
+            if (item.ItemId == Resource.Id.menuLogout)
+            {
+                FirebaseHelper.FirebaseAuthentication.SignOut();
+                StartActivity(typeof(MainActivity));
+                Finish();
+                return true;
+            }
+            return base.OnOptionsItemSelected(item);
+        }
 
         // Action for hardware Back button
         public override void OnBackPressed()

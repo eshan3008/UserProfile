@@ -4,5 +4,6 @@
     xmlns:tools="http://schemas.android.com/tools">
     <item android:id="@+id/menuLogout"
           android:title="Logout"
-          app:showAsAction="withText"/>
+          android:actionMenuTextColor ="@android:color/white"
+          app:showAsAction="always"/>
 </menu>

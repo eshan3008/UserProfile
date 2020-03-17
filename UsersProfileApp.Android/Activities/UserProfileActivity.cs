@@ -44,6 +44,7 @@ namespace UsersProfileApp.Android.Activities
             }
         }
 
+        // Open up the Image in browser
         private void ProfileLink_Click(object sender, EventArgs e)
         {
             var uri = global::Android.Net.Uri.Parse(UsersProfile.SelectedProfile?.Url);
